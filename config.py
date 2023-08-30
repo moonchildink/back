@@ -28,9 +28,18 @@ class Config:
         pass
 
 
-#
-# class DeploymentConfig(Config):
-#     SECRET_KEY=
+class DeploymentConfig(Config):
+    DEBUG = False
+    HOSTNAME = '127.0.0.1'
+    PORT = '3306'
+    SESSION_PERMANT = False
+    SESSION_TYPE = 'filesystem'
+    USERNAME = 'user'
+    PASSWORD = os.environ.get('DATABASE_PWD')
+    DATABASE = 'database'
+    SQLALCHEMY_DATABASE_URI = \
+        f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4"
+
 
 class DevelopmentConfig(Config):
     SECRET_KEY = 'Mwoo1764'
@@ -42,7 +51,6 @@ class DevelopmentConfig(Config):
     USERNAME = 'root'
     PASSWORD = "112358"
     DATABASE = "new_database"
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = \
         f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4"
     ADMIN_MAILS = ['carise0102@gmail.com', '2923636177@qq.com']
@@ -50,5 +58,6 @@ class DevelopmentConfig(Config):
 
 config = {
     'development': DevelopmentConfig,
+    'deploy': DeploymentConfig,
     'default': DevelopmentConfig
 }
