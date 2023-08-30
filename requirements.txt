@@ -1,0 +1,14 @@
+alembic==1.11.2
+Flask==2.2.3
+Flask_Cors==4.0.0
+Flask_HTTPAuth==4.8.0
+Flask_Login==0.6.2
+Flask_Mail==0.9.1
+Flask_Migrate==4.0.4
+flask_sqlalchemy==3.0.5
+jieba==0.42.1
+PyJWT==2.8.0
+PyJWT==2.8.0
+scikit_learn==1.0.2
+simhash==2.1.2
+Werkzeug==2.2.2
