@@ -32,12 +32,12 @@ def server_interval_error(message):
     return res
 
 
-def unauthorized(message):
+def unauthorized(message,status_code):
     res = jsonify({
         'error': 'unauthorized',
         'msg': message
     })
-    res.status_code = 401
+    res.status_code = status_code
     return res
 
 
