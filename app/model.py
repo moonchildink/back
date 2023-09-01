@@ -121,6 +121,7 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(32), unique=False, nullable=False)
     phone = db.Column(db.String(16), unique=True, nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    # gender = db.Column(db.Integer)  # 1代表男性，0代表女性
     is_authenticated = db.Column(db.Boolean, unique=False)
     register_time = db.Column(db.DATETIME(), default=datetime.datetime.utcnow())
     last_login = db.Column(db.DATETIME(), default=datetime.datetime.utcnow())
@@ -142,8 +143,9 @@ class User(UserMixin, db.Model):
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
+        Role.insert_roles()
         if self.role is None:
-            if self.phone in current_app.config['ADMIN_MAILS']:
+            if self.phone in current_app.config['ADMIN_PHONES']:
                 self.role = Role.query.filter_by(name='Administrator').first()
             else:
                 self.role = Role.query.filter_by(name='User').first()
