@@ -35,8 +35,10 @@ class DeploymentConfig(Config):
     SESSION_PERMANT = False
     SESSION_TYPE = 'filesystem'
     USERNAME = 'user'
-    PASSWORD = os.environ.get('DATABASE_PWD')
+    PASSWORD = 'eA2NJw3CWJie8nnT'
+    SECRET_KEY = 'Mwoo1764'
     DATABASE = 'database'
+    ADMIN_MAILS = ['18856364286']
     SQLALCHEMY_DATABASE_URI = \
         f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4"
 
