@@ -13,12 +13,22 @@ def verify_password(phone, password):
     :param password:
     :return:
     """
+    # if phone and password:
+    #     user = User.query.filter_by(phone=phone).first()
+    #     if user and phone == user.phone:
+    #         g.current_user = user
+    #         return user.verify_password(password)
+    #     else:
+    #         return False
+    # else:
+    #     return False
+
     if phone and password:
         user = User.query.filter_by(phone=phone).first()
-        if phone == user.phone:
-            g.current_user = user
-            return user.verify_password(password)
+        if user:
+            if user.password_hash == password:
+                return 1
+            else:
+                return 0        # 0 表示密码错误
         else:
-            return False
-    else:
-        return False
+            return -1           # -1 表示当前手机号码未注册
