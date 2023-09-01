@@ -18,7 +18,8 @@ def login():
     if phone is None or password is None:
         phone = request.args.get('phone')
         password = request.args.get('password')
-    if verify_password(phone, password):
+    rescode = verify_password(phone, password)
+    if rescode == 1:
         # 获取当前用户信息，返回格式化后的json字符串
         user = User.query.filter_by(phone=phone).first()
         user.generate_verify_code()
@@ -26,13 +27,13 @@ def login():
         db.session.add(user)
         db.session.commit()
         session['current_user_id'] = user.id
-        print(session.get('current_user_id'))
-        # print(session.current_user_id)
         res = user.to_json()
         return res
-    else:
-        res = unauthorized('wrong password')
+    elif rescode == 0:
+        res = unauthorized('wrong password', 401)
         return res
+    elif rescode == -1:
+        res = unauthorized('phone num has not been registered', 402)
 
 
 @auth.route('/', methods=['POST'])
@@ -93,9 +94,6 @@ def register():
         db.session.commit()
         token = user.to_json()
         return token
-    # except Exception as e:
-    #     res = server_interval_error(str(e))
-    #     return res
 
 
 @auth.route('modify_profile', methods=["POST"])
