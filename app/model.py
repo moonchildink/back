@@ -121,7 +121,7 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(32), unique=False, nullable=False)
     phone = db.Column(db.String(16), unique=True, nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
-    # gender = db.Column(db.Integer)  # 1代表男性，0代表女性
+    gender = db.Column(db.Integer,default=1)  # 1代表男性，0代表女性
     is_authenticated = db.Column(db.Boolean, unique=False)
     register_time = db.Column(db.DATETIME(), default=datetime.datetime.utcnow())
     last_login = db.Column(db.DATETIME(), default=datetime.datetime.utcnow())
@@ -207,11 +207,13 @@ class User(UserMixin, db.Model):
         secret_key = current_app.config['SECRET_KEY']
         try:
             token = jwt.decode(payload, secret_key, algorithms='HS256')
-        except Exception as e:
-            return str(e)
-        return User.query.get(token['user_id'])
-
-    # def renew_token(self):
+        # except Exception as e:
+        #     return str(e)
+        except jwt.ExpiredSignatureError:
+            return False,401
+        except jwt.DecodeError:
+            return False,402
+        return True,User.query.get(token['user_id'])
 
     def getJson(self):
         return jsonify({
@@ -225,6 +227,8 @@ class User(UserMixin, db.Model):
             'user_id': self.id,
             'name': self.name,
             'phone': self.phone,
+            'gender':'male' if self.gender==1 else 'female',
+            'password':self.password_hash,
             'last_login': self.last_login,
             'is_authenticated': self.is_authenticated,
             'register_time': self.register_time,

@@ -38,7 +38,7 @@ class DeploymentConfig(Config):
     PASSWORD = 'eA2NJw3CWJie8nnT'
     SECRET_KEY = 'Mwoo1764'
     DATABASE = 'database'
-    ADMIN_MAILS = ['18856364286']
+    ADMIN_PHONES = ['18856364286']
     SQLALCHEMY_DATABASE_URI = \
         f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4"
 
@@ -55,7 +55,7 @@ class DevelopmentConfig(Config):
     DATABASE = "new_database"
     SQLALCHEMY_DATABASE_URI = \
         f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4"
-    ADMIN_MAILS = ['carise0102@gmail.com', '2923636177@qq.com']
+    ADMIN_PHONES = ['carise0102@gmail.com', '2923636177@qq.com']
 
 
 config = {

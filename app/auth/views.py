@@ -10,7 +10,7 @@ from .errors import unauthorized, duplicate_phone, server_interval_error, invali
 
 @auth.route('/login', methods=["POST"])
 def login():
-    grant_type = request.form.get('grant_type')
+    grant_type = request.form.get('grant_type') if request.form.get('grant_type') is not None else request.args.get('grant_type')
     if grant_type is None or grant_type.lower() != 'password':
         arg_required()
     phone = request.form.get('phone')
@@ -53,9 +53,13 @@ def index():
 def get_current_user():
     token = request.form.get('token') if request.form.get('token') is not None else request.args.get('token')
     if token is not None:
-        user = User.test_verify_code(token)
-        res = user.to_json()
-        return res
+        boolean,user = User.test_verify_code(token)
+        if boolean:
+            res = user.to_json()
+            return res
+        else:
+            res = invalid_token()
+            return res
     else:
         res = arg_required("argument 'token' is required")
         return res
@@ -111,9 +115,9 @@ def modify_profile():
         name = request.args.get('name')
     # token译码
     try:
-        user = User.test_verify_code(token)
-        if user is None:
-            response = token_missing()
+        boolean,user = User.test_verify_code(token)
+        if not boolean:
+            response = invalid_token()
             return response
         user.phone = phone
         user.name = name
@@ -129,10 +133,6 @@ def modify_profile():
 
 @auth.route('logout')
 def logout():
-    token = request.form.get('token')
-    user_id = User.test_verify_code(token)
-    # 销毁token
-
     return ({
         'state': 200,
         'info': 'logout success'

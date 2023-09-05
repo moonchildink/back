@@ -23,6 +23,12 @@ def invalid_token():
     return response
 
 
+def permission_required():
+    res = api_abort(403, error='permission required', error_description="You don't have PERMISSION")
+    res.headers['WWW-Authenticate'] = 'Bearer'
+    return res
+
+
 def invalid_id():
     response = api_abort(401, error='invalid id', error_description="this post doesn't exist.")
     response.headers['WWW-Authenticate'] = 'Bearer'

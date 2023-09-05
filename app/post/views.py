@@ -5,7 +5,7 @@ from json import dumps
 from ..model import User, Post, Role, Follow, Permission
 from . import post
 from flask import request, jsonify
-from .errors import login_required, arg_required, invalid_id, invalid_token
+from .errors import login_required, arg_required, invalid_id, invalid_token, permission_required
 
 
 @post.route('/new', methods=['POST'])
@@ -19,14 +19,18 @@ def new_post():
             res = invalid_token()
             return res
         else:
-            user = User.test_verify_code(token)
-            if user.can(Permission.WRITE):
-                post = Post(title=title, content=content, timestamp=datetime.datetime.utcnow(),
-                            author=user, reads=0, last_edit_time=datetime.datetime.utcnow())
-                db.session.add(post)
-                db.session.commit()
-                res = post.to_json()
-                return res
+            boolean, user = User.test_verify_code(token)
+            if boolean:
+                if user.can(Permission.WRITE):
+                    post = Post(title=title, content=content, timestamp=datetime.datetime.utcnow(),
+                                author=user, reads=0, last_edit_time=datetime.datetime.utcnow())
+                    db.session.add(post)
+                    db.session.commit()
+                    res = post.to_json()
+                    return res
+                else:
+                    res = permission_required()
+                    return res
             else:
                 res = invalid_token()
                 return res
@@ -52,17 +56,18 @@ def my_post():
         res = arg_required('token missed')
         return res
     else:
-        user = User.test_verify_code(token)
-        posts = user.posts
-        post_list = []
-        for po in posts:
-            js = po.to_json().json
-            post_list.append(js)
-        dick = dict()
-        dick['posts'] = post_list
-        dick['length'] = len(post_list)
-        dick['user_id'] = user.id
-        return dumps(dick)
+        boolean, user = User.test_verify_code(token)
+        if boolean:
+            posts = user.posts
+            post_list = []
+            for po in posts:
+                js = po.to_json().json
+                post_list.append(js)
+            dick = dict()
+            dick['posts'] = post_list
+            dick['length'] = len(post_list)
+            dick['user_id'] = user.id
+            return dumps(dick)
 
 
 @post.route('/search', methods=['POST'])
