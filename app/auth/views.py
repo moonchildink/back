@@ -5,12 +5,13 @@ from ..model import User, Role
 from .. import db
 from .errors import page_not_found, arg_required
 from .authentication import verify_password
-from .errors import unauthorized, duplicate_phone, server_interval_error, invalid_token, token_missing
+from .errors import unauthorized, duplicate_phone, server_interval_error, invalid_token, token_missing, wrong_password
 
 
 @auth.route('/login', methods=["POST"])
 def login():
-    grant_type = request.form.get('grant_type') if request.form.get('grant_type') is not None else request.args.get('grant_type')
+    grant_type = request.form.get('grant_type') if request.form.get('grant_type') is not None else request.args.get(
+        'grant_type')
     if grant_type is None or grant_type.lower() != 'password':
         arg_required()
     phone = request.form.get('phone')
@@ -53,7 +54,7 @@ def index():
 def get_current_user():
     token = request.form.get('token') if request.form.get('token') is not None else request.args.get('token')
     if token is not None:
-        boolean,user = User.test_verify_code(token)
+        boolean, user = User.test_verify_code(token)
         if boolean:
             res = user.to_json()
             return res
@@ -107,27 +108,72 @@ def modify_profile():
         response = token_missing()
         return response
     phone = request.form.get('phone')
-    password = request.form.get('password')
     name = request.form.get('name')
-    if phone is None or password is None or name is None or token is None:
+    if phone is None or name is None or token is None:
         phone = request.args.get('phone')
-        password = request.args.get('password')
         name = request.args.get('name')
-    # token译码
-    try:
-        boolean,user = User.test_verify_code(token)
+        boolean, user = User.test_verify_code(token)
         if not boolean:
             response = invalid_token()
             return response
         user.phone = phone
         user.name = name
-        user.phone = user.phone
-        user.password_hash = password
         db.session.add(user)
         db.session.commit()
         return user.to_json()
-    except Exception as e:
+
+
+@auth.route('verify_password', methods=['POST'])
+def verify_password():
+    token = request.form.get('token') if request.form.get('token') is not None else request.args.get('token')
+    if token is None:
+        response = token_missing()
+        return response
+    password = request.form.get('password') if request.form.get('password') is not None else request.args.get(
+        'password')
+    boolean, user = User.test_verify_code(token)
+    if boolean:
+        print(user.password_hash)
+        print(password)
+        if password == user.password_hash:
+            return jsonify({
+                'status': 1,
+                'success': True
+            })
+        else:
+            return jsonify({
+                'status': 0,
+                'success': False
+            })
+    else:
         res = invalid_token()
+        return res
+
+
+@auth.route('/change_password', methods=['POST'])
+def change_password():
+    token = request.form.get('token') if request.form.get('token') is not None else request.args.get('token')
+    if token:
+        old_pwd = request.form.get('old_password') if request.form.get(
+            'old_password') is not None else request.args.get('old_password')
+        new_pwd = request.form.get('new_password') if request.form.get(
+            'new_password') is not None else request.args.get('new_password')
+        boolean, user = User.test_verify_code(token)
+        if boolean:
+            if user.password_hash == old_pwd:
+                user.password_hash = new_pwd
+                db.session.add(user)
+                db.session.commit()
+                res = user.to_json()
+                return res
+            else:
+                res = wrong_password()
+                return res
+        else:
+            res = invalid_token()
+            return res
+    else:
+        res = arg_required('token required')
         return res
 
 
