@@ -32,7 +32,7 @@ def server_interval_error(message):
     return res
 
 
-def unauthorized(message,status_code):
+def unauthorized(message, status_code):
     res = jsonify({
         'error': 'unauthorized',
         'msg': message
@@ -73,6 +73,12 @@ def invalid_token():
 
 def login_required():
     res = api_abort(401, error='Login Required', error_description='You need to login first.')
+    res.headers['WWW-Authenticate'] = 'Bearer'
+    return res
+
+
+def wrong_password():
+    res = api_abort(401, error='Wrong Password', error_description='Your password is wrong')
     res.headers['WWW-Authenticate'] = 'Bearer'
     return res
 
