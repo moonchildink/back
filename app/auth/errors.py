@@ -83,7 +83,7 @@ def wrong_password():
     return res
 
 
-def arg_required(info):
+def arg_required(info = None):
     res = api_abort(401, error='A required argument was absent', error_description=info)
     res.headers['WWW-Authenticate'] = 'Bearer'
     return res

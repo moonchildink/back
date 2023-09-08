@@ -4,7 +4,7 @@ from flask import request, jsonify, g, session
 from ..model import User, Role
 from .. import db
 from .errors import page_not_found, arg_required
-from .authentication import verify_password
+from .authentication import user_verify_password
 from .errors import unauthorized, duplicate_phone, server_interval_error, invalid_token, token_missing, wrong_password
 
 
@@ -12,14 +12,14 @@ from .errors import unauthorized, duplicate_phone, server_interval_error, invali
 def login():
     grant_type = request.form.get('grant_type') if request.form.get('grant_type') is not None else request.args.get(
         'grant_type')
-    if grant_type is None or grant_type.lower() != 'password':
-        arg_required()
+    if grant_type is None:
+        arg_required(info='argument required:grant_type,whose value should be "password"')
     phone = request.form.get('phone')
     password = request.form.get('password')
     if phone is None or password is None:
         phone = request.args.get('phone')
         password = request.args.get('password')
-    rescode = verify_password(phone, password)
+    rescode = user_verify_password(phone, password)
     if rescode == 1:
         # 获取当前用户信息，返回格式化后的json字符串
         user = User.query.filter_by(phone=phone).first()
