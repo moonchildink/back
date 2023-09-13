@@ -39,7 +39,11 @@ def new_post():
 @post.route('/<int:id>', methods=['GET'])
 def get_post(id):
     post = Post.query.get(id)
-    return post.to_json()
+    if post:
+        return post.to_json()
+    else:
+        res = invalid_id()
+        return res
 
 
 @post.route('/get_post', methods=['POST'])
