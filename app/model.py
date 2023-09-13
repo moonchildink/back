@@ -100,7 +100,7 @@ class Post(db.Model):
             'title': self.title,
             'content': self.content,
             'time': self.timestamp,
-            'timestamp':datetime.datetime.strptime(self.timestamp,'%Y-%m-%d  %H:%M:%S.%f').timestamp(),
+            'timestamp':self.timestamp.timestamp(),
             'last_edit_time': self.last_edit_time,
             'reads': self.reads,
             'author': {
@@ -235,7 +235,8 @@ class User(UserMixin, db.Model):
             'register_time': self.register_time,
             'role_id': self.role_id,
             'token': self.generate_verify_code(),
-            'last_login_timestamp':datetime.datetime.strptime(self.last_login,'%Y-%m-%d  %H:%M:%S.%f').timestamp()
+            'last_login_timestamp':self.last_login.timestamp(),
+            'register_time_stamp':self.register_time.timestamp()
         })
 
 
