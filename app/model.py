@@ -99,7 +99,8 @@ class Post(db.Model):
             'id': self.id,
             'title': self.title,
             'content': self.content,
-            'timestamp': self.timestamp,
+            'time': self.timestamp,
+            'timestamp':datetime.datetime.strptime(self.timestamp,'%Y-%m-%d  %H:%M:%S.%f').timestamp(),
             'last_edit_time': self.last_edit_time,
             'reads': self.reads,
             'author': {
@@ -121,7 +122,7 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(32), unique=False, nullable=False)
     phone = db.Column(db.String(16), unique=True, nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
-    gender = db.Column(db.Integer,default=1)  # 1代表男性，0代表女性
+    gender = db.Column(db.Integer, default=1)  # 1代表男性，0代表女性
     is_authenticated = db.Column(db.Boolean, unique=False)
     register_time = db.Column(db.DATETIME(), default=datetime.datetime.utcnow())
     last_login = db.Column(db.DATETIME(), default=datetime.datetime.utcnow())
@@ -210,10 +211,10 @@ class User(UserMixin, db.Model):
         # except Exception as e:
         #     return str(e)
         except jwt.ExpiredSignatureError:
-            return False,401
+            return False, 401
         except jwt.DecodeError:
-            return False,402
-        return True,User.query.get(token['user_id'])
+            return False, 402
+        return True, User.query.get(token['user_id'])
 
     def getJson(self):
         return jsonify({
@@ -227,13 +228,14 @@ class User(UserMixin, db.Model):
             'user_id': self.id,
             'name': self.name,
             'phone': self.phone,
-            'gender':'male' if self.gender==1 else 'female',
-            'password':self.password_hash,
+            'gender': 'male' if self.gender == 1 else 'female',
+            'password': self.password_hash,
             'last_login': self.last_login,
             'is_authenticated': self.is_authenticated,
             'register_time': self.register_time,
             'role_id': self.role_id,
-            'token': self.generate_verify_code()
+            'token': self.generate_verify_code(),
+            'last_login_timestamp':datetime.datetime.strptime(self.last_login,'%Y-%m-%d  %H:%M:%S.%f').timestamp()
         })
 
 
