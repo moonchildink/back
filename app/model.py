@@ -100,7 +100,7 @@ class Post(db.Model):
             'title': self.title,
             'content': self.content,
             'time': self.timestamp,
-            'timestamp':self.timestamp.timestamp(),
+            'timestamp': self.timestamp.timestamp(),
             'last_edit_time': self.last_edit_time,
             'reads': self.reads,
             'author': {
@@ -127,6 +127,7 @@ class User(UserMixin, db.Model):
     register_time = db.Column(db.DATETIME(), default=datetime.datetime.utcnow())
     last_login = db.Column(db.DATETIME(), default=datetime.datetime.utcnow())
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    avatar_path = db.Column(db.String(128), unique=False, nullable=False)  # 如果使用系统默认头像那么该字段为空
     followed = db.relationship('Follow', foreign_keys=[Follow.followed_id],
                                backref=db.backref('follower', lazy='joined'),
                                lazy='dynamic', cascade='all,delete-orphan')
@@ -235,8 +236,9 @@ class User(UserMixin, db.Model):
             'register_time': self.register_time,
             'role_id': self.role_id,
             'token': self.generate_verify_code(),
-            'last_login_timestamp':self.last_login.timestamp(),
-            'register_time_stamp':self.register_time.timestamp()
+            'last_login_timestamp': self.last_login.timestamp(),
+            'register_time_stamp': self.register_time.timestamp(),
+            'avatar_path': self.avatar_path
         })
 
 

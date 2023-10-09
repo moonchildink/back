@@ -44,16 +44,13 @@ class CosineSimilarity:
             sim = cosine_similarity([text1OneHotCode, text2OneHotCode])
             # print("文本相似度:%.2f%%" % (sim[1][0] * 100))
             # print()
-            return sim[1][0]*100
+            return sim[1][0] * 100
         except Exception as e:
             print(e)
             return 0.0
 
 
 class SimhashSimilarity:
-    """
-        调用Simhash库,计算文本相似度
-    """
 
     def __init__(self, string1, string2):
         self.text1 = string1

@@ -37,6 +37,10 @@ class DeploymentConfig(Config):
     USERNAME = 'user'
     PASSWORD = 'eA2NJw3CWJie8nnT'
     SECRET_KEY = 'Mwoo1764'
+    UPLOAD_FOLDER = r'../UploadFiles'
+    DEFAULT_AVATAR_PATH = 'Default.jpg'
+    MAX_CONTENT_LENGTH = 5 * 1000 * 1000
+    ALLOWED_EXTENSION = ['jpg', 'jpeg', '.xbm', '.tif', '.jfif', ',webp', 'png', 'bmp']
     DATABASE = 'database'
     ADMIN_PHONES = ['18856364286']
     SQLALCHEMY_DATABASE_URI = \
@@ -48,6 +52,10 @@ class DevelopmentConfig(Config):
     DEBUG = True
     HOSTNAME = '127.0.0.1'  # 设置数据库的IP地址
     SESSION_PERMANENT = False
+    UPLOAD_FOLDER = r'D:\code\Python\flaskProject\UpLoadFiles'
+    DEFAULT_AVATAR_PATH = r'D:\code\Python\flaskProject\UpLoadFiles\DefaultAvatar.jpg'
+    MAX_CONTENT_LENGTH = 5 * 1000 * 1000
+    ALLOWED_EXTENSION = ['jpg', 'jpeg', '.xbm', '.tif', '.jfif', ',webp', 'png', 'bmp']
     SESSION_TYPE = 'filesystem'
     PORT = '3306'
     USERNAME = 'root'

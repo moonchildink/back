@@ -1,11 +1,15 @@
 import datetime
+import os
 from . import auth
-from flask import request, jsonify, g, session
+from flask import request, jsonify, g, session, send_file, current_app
 from ..model import User, Role
 from .. import db
+from werkzeug.utils import secure_filename
 from .errors import page_not_found, arg_required
 from .authentication import user_verify_password
-from .errors import unauthorized, duplicate_phone, server_interval_error, invalid_token, token_missing, wrong_password
+from .errors import (unauthorized, duplicate_phone,
+                     unsupportedMediaType, invalid_token,
+                     token_missing, wrong_password, file_not_found)
 
 
 @auth.route('/login', methods=["POST"])
@@ -37,17 +41,20 @@ def login():
         res = unauthorized('phone num has not been registered', 402)
 
 
-@auth.route('/', methods=['POST'])
-def index():
-    """
-    ！注意！：当前路由仅可以在登陆后访问，需要携带当前用户的jwt
-    :return: 当前蓝图下所有可访问的资源
-    """
-    return jsonify({
-        'api_version': '1.0',
-        'api_base_url': 'http://127.0.0.1:5000/auth',
-        'current_user_url': 'http://127.0.0.1:5000/auth/user/<int:id>'
-    })
+# def get_routes(bp_names):
+#     routes = [rule for rule in current_app.url_map.iter_rules() if rule.endpoint.startswith(bp_names)]
+#     li = []
+#     for route in routes:
+#         ro = Route(route.endpoint, route.methods)
+#         li.append(ro.toJson())
+#     print(li)
+#     return li
+
+
+# @auth.route('/', methods=['GET', 'POST'])
+# def index():
+#     return jsonify(get_routes(request.blueprint))
+#     # return get_routes(request.blueprint)
 
 
 @auth.route('/user', methods=['POST', 'GET'])
@@ -76,23 +83,52 @@ def get_current_user_via_id(id):
         page_not_found(str(e))
 
 
+def isFileExtensionAllowed(filename: str) -> bool:
+    if filename.rsplit('.')[-1].lower() in current_app.config['ALLOWED_EXTENSION']:
+        return True
+    return False
+
+
+def isAllowedSize(file) -> bool:
+    if file.content_length > current_app.config['MAX_CONTENT_LENGTH']:
+        return False
+    return True
+
+
 @auth.route('/register', methods=['POST'])
 def register():
     phone = request.form.get('phone')
     name = request.form.get('name')
     password_hash = request.form.get('password')
-    is_authenticated = True
+
     if phone is None or name is None or password_hash is None:
         phone = request.args.get('phone')
         name = request.args.get('name')
         password_hash = request.args.get('password')
+
+    if 'avatar' in request.files:
+        avatar = request.files['avatar']
+        if isFileExtensionAllowed(avatar.filename) and isAllowedSize(avatar):
+            filelist = os.listdir(current_app.config['UPLOAD_FOLDER'])
+            num = filelist.count(avatar.filename)
+            if num > 0:
+                avatar.filename = avatar.filename.split('.')[0] + '({0})'.format(num) + avatar.filename.rsplit('.')[-1]
+            avatar_filename = secure_filename(avatar.filename)
+            avatar.save(avatar_filename)
+        else:
+            error_msg = 'Allowed Extensions are showing as bellow:' + str(current_app.config['ALLOWED_EXTENSION'])
+            res = unsupportedMediaType(error_msg)
+            return res
+    else:
+        # 使用默认头像
+        avatar_filename = 'Default Avatar'
     print(phone, password_hash, name)
     is_duplicate, error_msg = User.is_duplicated(phone, name)
     if is_duplicate:
         res = duplicate_phone(error_msg)
         return res
     else:
-        user = User(phone=phone, name=name, password_hash=password_hash, is_authenticated=True)
+        user = User(phone=phone, name=name, password_hash=password_hash, is_authenticated=True, avatar=avatar_filename)
         # try:
         Role.insert_roles()
         db.session.add(user)
@@ -101,7 +137,7 @@ def register():
         return token
 
 
-@auth.route('modify_profile', methods=["POST"])
+@auth.route('/modify_profile', methods=["POST"])
 def modify_profile():
     token = request.form.get('token') if request.form.get('token') is not None else request.args.get('token')
     if token is None:
@@ -123,7 +159,7 @@ def modify_profile():
         return user.to_json()
 
 
-@auth.route('verify_password', methods=['POST'])
+@auth.route('/verify_password', methods=['POST'])
 def verify_password():
     token = request.form.get('token') if request.form.get('token') is not None else request.args.get('token')
     if token is None:
@@ -177,9 +213,50 @@ def change_password():
         return res
 
 
-@auth.route('logout')
+@auth.route('/logout')
 def logout():
     return ({
         'state': 200,
         'info': 'logout success'
     })
+
+
+@auth.route('/avatar', methods=['GET', 'POST'])
+def getAvatar():
+    """
+    :info: 使用查询字符串方式获取头像文件
+    :return: 返回Response类型数据，即相应的图片
+    """
+    file_path = request.args.get('file_path') if request.args.get('file_path') else request.form.get('file_path')
+    if not file_path:
+        res = arg_required(info="'file_path' needed.")
+        return res
+    if file_path == 'Default':
+        filepath = current_app.config['DEFAULT_AVATAR_PATH']
+    else:
+        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], file_path)
+    try:
+        return send_file(filepath, mimetype='image/gif')
+    except FileNotFoundError as e:
+        print(e)
+        res = file_not_found(
+            info='Requested file not found in Server.Check the file_path again or contact the developer')
+        return res
+
+
+@auth.route('/avatar/filename=<filename>', methods=['GET'])
+def getAvatar_(filename):
+    if not filename:
+        res = arg_required(info="'file_path' needed.")
+        return res
+    if filename == 'Default':
+        filepath = current_app.config['DEFAULT_AVATAR_PATH']
+    else:
+        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+    try:
+        return send_file(filepath, mimetype='image/gif')
+    except FileNotFoundError as e:
+        print(e)
+        res = file_not_found(
+            info='Requested file not found in Server.Check the file_path again or contact the developer')
+        return res
