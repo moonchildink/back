@@ -32,13 +32,13 @@ class DeploymentConfig(Config):
     DEBUG = False
     HOSTNAME = '127.0.0.1'
     PORT = '3306'
-    SESSION_PERMANT = False
+    SESSION_PERMANENT = False
     SESSION_TYPE = 'filesystem'
     USERNAME = 'user'
     PASSWORD = 'eA2NJw3CWJie8nnT'
     SECRET_KEY = 'Mwoo1764'
-    UPLOAD_FOLDER = r'../UploadFiles'
-    DEFAULT_AVATAR_PATH = 'Default.jpg'
+    UPLOAD_FOLDER = r'../UpLoadFiles'
+    DEFAULT_AVATAR_PATH = '../UpLoadFiles/Default.jpg'
     MAX_CONTENT_LENGTH = 5 * 1000 * 1000
     ALLOWED_EXTENSION = ['jpg', 'jpeg', '.xbm', '.tif', '.jfif', ',webp', 'png', 'bmp']
     DATABASE = 'database'

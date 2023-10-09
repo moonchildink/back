@@ -1,5 +1,5 @@
 # 忽略数据库迁移文件
 migrations/
-#UpLoadFiles/
+UpLoadFiles/
 *.ipynb
 __pycache__/
