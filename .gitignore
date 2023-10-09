@@ -2,3 +2,4 @@
 migrations/
 #UpLoadFiles/
 *.ipynb
+__pycache__/
