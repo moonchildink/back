@@ -2,10 +2,20 @@ import datetime
 from ..search import ProcessInput
 from .. import db
 from json import dumps
-from ..model import User, Post, Role, Follow, Permission
+from ..model import User, Post, Permission
 from . import post
-from flask import request, jsonify
-from .errors import login_required, arg_required, invalid_id, invalid_token, permission_required
+from flask import request, jsonify, current_app
+from .errors import arg_required, invalid_id, invalid_token, permission_required
+
+
+def get_routes(bp_names):
+    routes = [rule for rule in current_app.url_map.iter_rules() if rule.endpoint.startswith(bp_names)]
+    return routes
+
+
+@post.route('/', methods=['POST'])
+def index():
+    return jsonify(get_routes(request.blueprint))
 
 
 @post.route('/new', methods=['POST'])
@@ -38,9 +48,25 @@ def new_post():
 
 @post.route('/<int:id>', methods=['GET'])
 def get_post(id):
-    post = Post.query.get(id)
-    if post:
-        return post.to_json()
+    po = Post.query.get(id)
+    if po:
+        # 阅读数+1
+        reads = po.reads
+        reads += 1
+        po.reads = reads
+        db.session.add(po)
+        db.session.commit()
+        return po.to_json()
+    else:
+        res = invalid_id()
+        return res
+
+
+@post.route('/id=<int:post_id>', methods=['GET'])
+def getPost(post_id):
+    po = Post.query.get(post_id)
+    if po:
+        return po.to_json()
     else:
         res = invalid_id()
         return res
@@ -123,15 +149,15 @@ def delete_post_via_DELETE(id):
         res = invalid_id()
         return res
 
-
-@post.route('/', methods=['GET'])
-def index():
-    return jsonify({
-        'api_version': '1.0',
-        'api_base_url': 'http://127.0.0.1/post',
-        'add_new_post': '/new',
-        'delete_post': '/delete',
-        'search_post': '/search',
-        "user's post": '/my_post/',
-        'query_post': '?<id>'
-    })
+#
+# @post.route('/', methods=['GET'])
+# def index():
+#     return jsonify({
+#         'api_version': '1.0',
+#         'api_base_url': 'http://127.0.0.1/post',
+#         'add_new_post': '/new',
+#         'delete_post': '/delete',
+#         'search_post': '/search',
+#         "user's post": '/my_post/',
+#         'query_post': '?<id>'
+#     })
