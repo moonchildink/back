@@ -37,7 +37,7 @@ class DeploymentConfig(Config):
     USERNAME = 'user'
     PASSWORD = 'eA2NJw3CWJie8nnT'
     SECRET_KEY = 'Mwoo1764'
-    UPLOAD_FOLDER = r'../../../UpLoadFiles'
+    UPLOAD_FOLDER = r'../.././UpLoadFiles'
     DEFAULT_AVATAR_PATH = '../../UpLoadFiles/Default.jpg'
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024
     ALLOWED_EXTENSION = ['jpg', 'jpeg', '.xbm', '.tif', '.jfif', ',webp', 'png', 'bmp']
