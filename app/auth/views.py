@@ -88,7 +88,7 @@ def saveFile(avatar):
         avatar.filename = current_app.config['UPLOAD_FOLDER'] + '/' + avatar.filename.split('.')[0] + '({0})'.format(
             num) + '.' + avatar.filename.rsplit('.')[-1]
     else:
-        avatar.filename = current_app.config['UPLOAD_FOLDER'] + avatar.filename
+        avatar.filename = current_app.config['UPLOAD_FOLDER'] + '/' + avatar.filename
     avatar_filename = secure_filename(avatar.filename)
     avatar.save(avatar_filename)
     return avatar_filename
