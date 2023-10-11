@@ -9,7 +9,7 @@ from .errors import page_not_found, arg_required
 from .authentication import user_verify_password
 from .errors import (unauthorized, duplicate_phone,
                      unsupportedMediaType, invalid_token,
-                     token_missing, wrong_password, file_not_found)
+                     token_missing, wrong_password, file_not_found, requestEntityTooLarge)
 
 
 @auth.route('/login', methods=["POST"])
@@ -41,22 +41,6 @@ def login():
         res = unauthorized('phone num has not been registered', 402)
 
 
-# def get_routes(bp_names):
-#     routes = [rule for rule in current_app.url_map.iter_rules() if rule.endpoint.startswith(bp_names)]
-#     li = []
-#     for route in routes:
-#         ro = Route(route.endpoint, route.methods)
-#         li.append(ro.toJson())
-#     print(li)
-#     return li
-
-
-# @auth.route('/', methods=['GET', 'POST'])
-# def index():
-#     return jsonify(get_routes(request.blueprint))
-#     # return get_routes(request.blueprint)
-
-
 @auth.route('/user', methods=['POST', 'GET'])
 def get_current_user():
     token = request.form.get('token') if request.form.get('token') is not None else request.args.get('token')
@@ -84,15 +68,28 @@ def get_current_user_via_id(id):
 
 
 def isFileExtensionAllowed(filename: str) -> bool:
-    if filename.rsplit('.')[-1].lower() in current_app.config['ALLOWED_EXTENSION']:
-        return True
-    return False
+    # if filename.rsplit('.')[-1].lower() in current_app.config['ALLOWED_EXTENSION']:
+    #     return True
+    # return False
+    return ('.' in filename and
+            filename.rsplit('.')[-1].lower() in current_app.config['ALLOWED_EXTENSION'])
 
 
 def isAllowedSize(file) -> bool:
     if file.content_length > current_app.config['MAX_CONTENT_LENGTH']:
         return False
     return True
+
+
+def saveFile(avatar):
+    filelist = os.listdir(current_app.config['UPLOAD_FOLDER'])
+    num = filelist.count(avatar.filename)
+    if num > 0:
+        avatar.filename = current_app.config['UPLOAD_FOLDER'] + avatar.filename.split('.')[0] + '({0})'.format(num) + \
+                          avatar.filename.rsplit('.')[-1]
+    avatar_filename = secure_filename(avatar.filename)
+    avatar.save(avatar_filename)
+    return avatar_filename
 
 
 @auth.route('/register', methods=['POST'])
@@ -108,13 +105,14 @@ def register():
 
     if 'avatar' in request.files:
         avatar = request.files['avatar']
-        if isFileExtensionAllowed(avatar.filename) and isAllowedSize(avatar):
-            filelist = os.listdir(current_app.config['UPLOAD_FOLDER'])
-            num = filelist.count(avatar.filename)
-            if num > 0:
-                avatar.filename = avatar.filename.split('.')[0] + '({0})'.format(num) + avatar.filename.rsplit('.')[-1]
-            avatar_filename = secure_filename(avatar.filename)
-            avatar.save(avatar_filename)
+        if isFileExtensionAllowed(avatar.filename):
+            if isAllowedSize(avatar):
+                avatar_filename = saveFile(avatar)
+            else:
+                error_msg = 'The size of avatar should be less than:' + current_app.config[
+                    'MAX_CONTENT_LENGTH'] + ',while the current file size is:' + str(avatar.content_length)
+                res = requestEntityTooLarge(info=error_msg)
+                return res
         else:
             error_msg = 'Allowed Extensions are showing as bellow:' + str(current_app.config['ALLOWED_EXTENSION'])
             res = unsupportedMediaType(error_msg)
@@ -260,4 +258,36 @@ def getAvatar_(filename):
         print(e)
         res = file_not_found(
             info='Requested file not found in Server.Check the file_path again or contact the developer')
+        return res
+
+
+@auth.route('/avatar/modify', methods=['POST'])
+def modifyAvatar():
+    if 'avatar' in request.files:
+        new_avatar = request.files['avatar']
+        if isFileExtensionAllowed(new_avatar.filename):
+            if isAllowedSize(new_avatar):
+                avatar_filename = saveFile(new_avatar)
+            else:
+                error_msg = 'The size of avatar should be less than:' + current_app.config[
+                    'MAX_CONTENT_LENGTH'] + ',while the current file size is:' + str(new_avatar.content_length)
+                res = unsupportedMediaType(error_msg)
+                return res
+        else:
+            error_msg = 'Allowed Extensions are showing as bellow:' + str(current_app.config['ALLOWED_EXTENSION'])
+            res = unsupportedMediaType(error_msg)
+            return res
+        token = request.form.get('token') if request.form.get('token') else request.args.get('token')
+        boolean, user = User.test_verify_code(token)
+        if boolean:
+            user.avatar_path = avatar_filename
+            db.session.add(user)
+            db.session.commit()
+            res = user.to_json()
+            return res
+        else:
+            res = invalid_token()
+            return res
+    else:
+        res = arg_required()
         return res

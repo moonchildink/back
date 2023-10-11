@@ -95,6 +95,12 @@ def unsupportedMediaType(info=None):
     return res
 
 
+def requestEntityTooLarge(info=None):
+    res = api_abort(413, error='Request Entity too Large', error_description=info)
+    res.headers['WWW-Authenticate'] = 'Bearer'
+    return res
+
+
 def file_not_found(info=None):
     res = api_abort(404, error='Source not found', error_description=info)
     res.headers['WWW-Authenticate'] = 'Bearer'

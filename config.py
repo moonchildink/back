@@ -39,7 +39,7 @@ class DeploymentConfig(Config):
     SECRET_KEY = 'Mwoo1764'
     UPLOAD_FOLDER = r'../../UpLoadFiles'
     DEFAULT_AVATAR_PATH = '../../UpLoadFiles/Default.jpg'
-    MAX_CONTENT_LENGTH = 5 * 1000 * 1000
+    MAX_CONTENT_LENGTH = 5 * 1024 * 1024
     ALLOWED_EXTENSION = ['jpg', 'jpeg', '.xbm', '.tif', '.jfif', ',webp', 'png', 'bmp']
     DATABASE = 'database'
     ADMIN_PHONES = ['18856364286']
@@ -54,7 +54,7 @@ class DevelopmentConfig(Config):
     SESSION_PERMANENT = False
     UPLOAD_FOLDER = r'D:\code\Python\flaskProject\UpLoadFiles'
     DEFAULT_AVATAR_PATH = r'D:\code\Python\flaskProject\UpLoadFiles\DefaultAvatar.jpg'
-    MAX_CONTENT_LENGTH = 5 * 1000 * 1000
+    MAX_CONTENT_LENGTH = 5 * 1024 * 1024
     ALLOWED_EXTENSION = ['jpg', 'jpeg', '.xbm', '.tif', '.jfif', ',webp', 'png', 'bmp']
     SESSION_TYPE = 'filesystem'
     PORT = '3306'
