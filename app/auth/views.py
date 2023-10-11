@@ -128,7 +128,8 @@ def register():
         res = duplicate_phone(error_msg)
         return res
     else:
-        user = User(phone=phone, name=name, password_hash=password_hash, is_authenticated=True, avatar=avatar_filename)
+        user = User(phone=phone, name=name, password_hash=password_hash, is_authenticated=True,
+                    avatar_path=avatar_filename)
         # try:
         Role.insert_roles()
         db.session.add(user)
