@@ -121,7 +121,7 @@ def register():
             return res
     else:
         # 使用默认头像
-        avatar_filename = 'Default Avatar'
+        avatar_filename = 'Default'
     print(phone, password_hash, name)
     is_duplicate, error_msg = User.is_duplicated(phone, name)
     if is_duplicate:
