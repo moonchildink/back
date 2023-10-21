@@ -43,3 +43,26 @@ uni.request({
      1.   'post_id'
 8.   删除指定文章：'post/<id>'，DELETE方法，参数在请求URL中写明。举例：`http://118.89.112.228:8000/post/<id>`
 9.   获取所有POST相关接口：'/post/'，GET方法
+
+
+
+
+
+### 头像、图片相关接口
+
+-   在注册时添加头像。avatar参数可以为空，也就是使用默认头像。
+
+![image-20231021211227520](https://cdn.jsdelivr.net/gh/moonchildink/image@main/imgs/image-20231021211227520.png)
+
+![image-20231021211233880](https://cdn.jsdelivr.net/gh/moonchildink/image@main/imgs/image-20231021211233880.png)
+
+-   获取当前用户的头像，GET/POST方法
+
+![image-20231021211553581](https://cdn.jsdelivr.net/gh/moonchildink/image@main/imgs/image-20231021211553581.png)
+
+-   通过文件路径获取头像，GET方法
+
+![image-20231021211921068](https://cdn.jsdelivr.net/gh/moonchildink/image@main/imgs/image-20231021211921068.png)
+
+
+
