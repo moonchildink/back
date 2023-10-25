@@ -107,6 +107,7 @@ class Post(db.Model):
                 'id': self.author.id,
                 'name': self.author.name,
                 'phone': self.author.phone
+                'avatar_path': self.author.avatar_path
             }
         })
 
