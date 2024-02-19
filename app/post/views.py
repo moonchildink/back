@@ -148,16 +148,3 @@ def delete_post_via_DELETE(id):
     else:
         res = invalid_id()
         return res
-
-#
-# @post.route('/', methods=['GET'])
-# def index():
-#     return jsonify({
-#         'api_version': '1.0',
-#         'api_base_url': 'http://127.0.0.1/post',
-#         'add_new_post': '/new',
-#         'delete_post': '/delete',
-#         'search_post': '/search',
-#         "user's post": '/my_post/',
-#         'query_post': '?<id>'
-#     })

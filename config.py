@@ -40,7 +40,7 @@ class DeploymentConfig(Config):
     UPLOAD_FOLDER = r'/data/UpLoadFiles'
     DEFAULT_AVATAR_PATH = '../../UpLoadFiles/Default.jpg'
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024
-    ALLOWED_EXTENSION = ['jpg', 'jpeg', '.xbm', '.tif', '.jfif', ',webp', 'png', 'bmp']
+    ALLOWED_EXTENSION = ['jpg', 'jpeg', '.xbm', '.tif', '.mp4', '.jfif', ',webp', 'png', 'bmp']
     DATABASE = 'database'
     ADMIN_PHONES = ['18856364286']
     SQLALCHEMY_DATABASE_URI = \
@@ -55,7 +55,7 @@ class DevelopmentConfig(Config):
     UPLOAD_FOLDER = r'D:\code\Python\flaskProject\UpLoadFiles'
     DEFAULT_AVATAR_PATH = r'D:\code\Python\flaskProject\UpLoadFiles\DefaultAvatar.jpg'
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024
-    ALLOWED_EXTENSION = ['jpg', 'jpeg', '.xbm', '.tif', '.jfif', ',webp', 'png', 'bmp']
+    ALLOWED_EXTENSION = ['jpg', 'jpeg', '.xbm', '.mp4', '.tif', '.jfif', ',webp', 'png', 'bmp']
     SESSION_TYPE = 'filesystem'
     PORT = '3306'
     USERNAME = 'root'
