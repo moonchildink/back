@@ -4,9 +4,9 @@ import os
 from .. import db
 from ..I3D import Predictor
 from ..model import Video, User
-from error import invalid_token, unsupportedMediaType, token_missing
+from .error import invalid_token, unsupportedMediaType, token_missing
 
-predicator = Predictor()
+# predicator = Predictor()
 
 
 def saveFile(avatar):
@@ -28,7 +28,7 @@ def isFileExtensionAllowed(filename: str) -> bool:
 
 @main.route('video_upload', methods=['POST'])
 def video_upload():
-    # 接收前端传输的视频并保存
+    # 接收前端传输的视频并保存_
     # 预测结果
     if 'video' in request.files:
         token = request.form.get('token') if request.form.get('token') is not None else request.args.get('token')
@@ -57,5 +57,6 @@ def video_upload():
 
 
 def get_predication(video_path):
-    label = predicator.predicate(video_path)
-    return label
+    # label = predicator.predicate(video_path)
+    # return label
+    pass

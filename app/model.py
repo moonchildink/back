@@ -76,35 +76,39 @@ class Role(db.Model):
         return '<Role %r>' % self.name
 
 
+
 class Follow(db.Model):
     __tablename__ = 'follow'
     follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow())
 
+
+
 class Video(db.Model):
     __tablename__ = 'video'
-    id = db.Column(db.Integer,primary_key = True)
-    video_path = db.Column(db.String(64),nullable=False,unique=False)
-    video_predication = db.Column(db.String(10),nullable=False,unqiue=False)
-    timestamp = db.Column(db.DataTime,default = datetime.datetime.utcnow())
+    id = db.Column(db.Integer, primary_key=True)
+    video_path = db.Column(db.String(64), nullable=False, unique=True)
+    video_predication = db.Column(db.String(10), nullable=False, unique=False)
+    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow())
 
-    uploader = db.Column(db.Integer,db.ForeignKet('user.id'))
+    uploader_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def to_json(self):
         return jsonify({
-            'uploader':{
-                'id':self.uploader.id,
-                'name':self.uploader.name,
-                'phone':self.uploader.phone,
-                'avatar_path':self.uploader.avatar_path
+            'uploader': {
+                'id': self.uploader.id,
+                'name': self.uploader.name,
+                'phone': self.uploader.phone,
+                'avatar_path': self.uploader.avatar_path
             },
-            'timestamp':self.timestamp,
-            'predication':self.video_predication
+            'timestamp': self.timestamp,
+            'predication': self.video_predication
         })
 
-    def __init__(self,**kwargs):
-        super(Video,self).__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super(Video, self).__init__(**kwargs)
+
 
 class Post(db.Model):
     __tablename__ = 'post'
@@ -115,6 +119,7 @@ class Post(db.Model):
     reads = db.Column(db.Integer, default=0)
     last_edit_time = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
     def to_json(self):
         return jsonify({
             'id': self.id,
@@ -149,7 +154,7 @@ class User(UserMixin, db.Model):
     register_time = db.Column(db.DATETIME(), default=datetime.datetime.utcnow())
     last_login = db.Column(db.DATETIME(), default=datetime.datetime.utcnow())
     posts = db.relationship('Post', backref='author', lazy='dynamic')
-    videos = db.relationship('Video',backref='uploader',lazy='dynamic')
+    videos = db.relationship('Video', backref='uploader', lazy='dynamic')
     avatar_path = db.Column(db.String(128), unique=False, nullable=False)  # 如果使用系统默认头像那么该字段为空
     followed = db.relationship('Follow', foreign_keys=[Follow.followed_id],
                                backref=db.backref('follower', lazy='joined'),

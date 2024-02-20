@@ -39,6 +39,6 @@ def creat_app(config_name='default'):
     app.register_blueprint(post_blueprint, url_prefix='/post')
 
     from .main import main as main_blueprint
-    app.register_blueprint(main_blueprint)
+    app.register_blueprint(main_blueprint,url_prefix='/main')
 
     return app

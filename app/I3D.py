@@ -488,7 +488,7 @@ class Predictor:
         num_classes = 2000
         self.i3d = InceptionI3d(400, in_channels=3)
         self.i3d.replace_logits(num_classes)
-        self.i3d.load_state_dict(torch.load('/kaggle/working/FINAL_nslt_2000.pt'))
+        self.i3d.load_state_dict(torch.load(r'FINAL_nslt_2000_iters=5104_top1=32.48_top5=57.31_top10=66.31.pt',map_location=torch.device('cpu')))
         # i3d.load_state_dict(torch.load(weights))  # nslt_2000_000700.pt nslt_1000_010800 nslt_300_005100.pt(best_results)  nslt_300_005500.pt(results_reported) nslt_2000_011400
         self.i3d.cuda()
         self.i3d = nn.DataParallel(self.i3d)
