@@ -6,6 +6,7 @@ from ..I3D import Predictor
 from ..model import Video, User
 from .error import invalid_token, unsupportedMediaType, token_missing
 
+
 # predicator = Predictor()
 
 
@@ -26,7 +27,11 @@ def isFileExtensionAllowed(filename: str) -> bool:
             filename.rsplit('.')[-1].lower() in current_app.config['ALLOWED_EXTENSION'])
 
 
-@main.route('video_upload', methods=['POST'])
+@main.route('/', methods=['GET'])
+def index():
+    return 'hello'
+
+@main.route('/video_upload', methods=['POST'])
 def video_upload():
     # 接收前端传输的视频并保存_
     # 预测结果
