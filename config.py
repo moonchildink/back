@@ -47,6 +47,25 @@ class DeploymentConfig(Config):
         f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4"
 
 
+class WSL_Config(Config):
+    DEBUG = False
+    HOSTNAME = '127.0.0.1'
+    PORT = '3306'
+    SESSION_PERMANENT = False
+    SESSION_TYPE = 'filesystem'
+    USERNAME = 'user'
+    PASSWORD = 'yZDWwtacMzsST24B'
+    SECRET_KEY = 'Mwoo1764'
+    UPLOAD_FOLDER = r'/data/UpLoadFiles'
+    DEFAULT_AVATAR_PATH = '../../UpLoadFiles/Default.jpg'
+    MAX_CONTENT_LENGTH = 5 * 1024 * 1024
+    ALLOWED_EXTENSION = ['jpg', 'jpeg', '.xbm', '.tif', '.mp4', '.jfif', ',webp', 'png', 'bmp']
+    DATABASE = 'database'
+    ADMIN_PHONES = ['18856364286']
+    SQLALCHEMY_DATABASE_URI = \
+        f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4"
+
+
 class DevelopmentConfig(Config):
     SECRET_KEY = 'Mwoo1764'
     DEBUG = True
@@ -60,7 +79,8 @@ class DevelopmentConfig(Config):
     PORT = '3306'
     USERNAME = 'root'
     PASSWORD = "112358"
-    DATABASE = "new_database"
+    # DATABASE = "new_database"
+    DATABASE = "new_schema"
     SQLALCHEMY_DATABASE_URI = \
         f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4"
     ADMIN_PHONES = ['carise0102@gmail.com', '2923636177@qq.com']
@@ -69,5 +89,6 @@ class DevelopmentConfig(Config):
 config = {
     'development': DevelopmentConfig,
     'deploy': DeploymentConfig,
+    'wsl': WSL_Config,
     'default': DevelopmentConfig
 }
