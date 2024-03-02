@@ -37,6 +37,7 @@ class DeploymentConfig(Config):
     USERNAME = 'user'
     PASSWORD = 'eA2NJw3CWJie8nnT'
     SECRET_KEY = 'Mwoo1764'
+    VIDEO_DIR = '../../all_video/'
     UPLOAD_FOLDER = r'/data/UpLoadFiles'
     DEFAULT_AVATAR_PATH = '../../UpLoadFiles/Default.jpg'
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024
@@ -78,8 +79,8 @@ class DevelopmentConfig(Config):
     SESSION_TYPE = 'filesystem'
     PORT = '3306'
     USERNAME = 'root'
+    VIDEO_DIR = '../../all_video/'
     PASSWORD = "112358"
-    # DATABASE = "new_database"
     DATABASE = "new_schema"
     SQLALCHEMY_DATABASE_URI = \
         f"mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4"

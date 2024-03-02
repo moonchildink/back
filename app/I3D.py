@@ -1,22 +1,13 @@
 import math
 import os
 import argparse
-
 import matplotlib.pyplot as plt
-
 import torch
 import torch.nn as nn
-
 from torchvision import transforms
-# import videotransforms
-
-import numpy as np
-
 import torch.nn.functional as F
 import json
-import os
 import os.path
-
 import cv2
 import numpy as np
 import torch
@@ -442,6 +433,7 @@ def video_to_tensor(pic):
 
 from torchvision import transforms
 
+
 def data_reader(video_path):
     num_frames = int(cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FRAME_COUNT))
     start_f = 0
@@ -488,7 +480,8 @@ class Predictor:
         num_classes = 2000
         self.i3d = InceptionI3d(400, in_channels=3)
         self.i3d.replace_logits(num_classes)
-        self.i3d.load_state_dict(torch.load(r'FINAL_nslt_2000_iters=5104_top1=32.48_top5=57.31_top10=66.31.pt',map_location=torch.device('cpu')))
+        self.i3d.load_state_dict(torch.load(r'FINAL_nslt_2000_iters=5104_top1=32.48_top5=57.31_top10=66.31.pt',
+                                            map_location=torch.device('cpu')))
         # i3d.load_state_dict(torch.load(weights))  # nslt_2000_000700.pt nslt_1000_010800 nslt_300_005100.pt(best_results)  nslt_300_005500.pt(results_reported) nslt_2000_011400
         self.i3d.cuda()
         self.i3d = nn.DataParallel(self.i3d)

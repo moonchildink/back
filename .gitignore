@@ -3,3 +3,4 @@ migrations/
 UpLoadFiles/
 *.ipynb
 __pycache__/
+all_video/

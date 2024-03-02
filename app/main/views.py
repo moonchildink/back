@@ -1,10 +1,11 @@
 from . import main
-from flask import request, current_app
+from flask import request, current_app, send_file, send_from_directory
 import os
 from .. import db
 from ..I3D import Predictor
 from ..model import Video, User
 from .error import invalid_token, unsupportedMediaType, token_missing
+from fuzzywuzzy import process
 
 
 # predicator = Predictor()
@@ -30,6 +31,7 @@ def isFileExtensionAllowed(filename: str) -> bool:
 @main.route('/', methods=['GET'])
 def index():
     return 'hello'
+
 
 @main.route('/video_upload', methods=['POST'])
 def video_upload():
@@ -59,6 +61,31 @@ def video_upload():
     else:
         res = token_missing()
         return res
+
+
+def read_word_list():
+    with open(r'../../word_list.txt', 'r', encoding='utf-8') as file:
+        file_list = file.readlines()
+    return file_list
+
+
+@main.route('/video/<path:filename>')
+def get_video(path):
+    # 返回视频文件
+    file_path = os.path.join(current_app.config['VIDEO_DIR'], path + '.mp4')
+    return send_file(file_path)
+
+
+@main.route('/search_word', methods=['GET'])
+def search_word():
+    # 在此处构建多个视频的URL，返回json数据
+    query_word = request.args.get('query_word')
+
+    file_list = read_word_list()
+    matches = process.extract(query_word, file_list)
+    matches = [item[0][:-1] for item in matches]
+    matches = [match + '.mp4' for match in matches]
+    return matches
 
 
 def get_predication(video_path):
