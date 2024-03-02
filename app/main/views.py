@@ -2,7 +2,7 @@ from . import main
 from flask import request, current_app, send_file, send_from_directory
 import os
 from .. import db
-from ..I3D import Predictor
+# from ..I3D import Predictor
 from ..model import Video, User
 from .error import invalid_token, unsupportedMediaType, token_missing
 from fuzzywuzzy import process
